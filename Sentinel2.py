@@ -2,13 +2,14 @@
 # user: gonzalogis
 # pass: iwc.w6mEMp84Fj4
 
-from osgeo import ogr
+from osgeo import ogr, osr
 import os
 import sentinelsat
 from datetime import date
 import time
+import pyproj
 
-#Establecer directorio mediante 'os'
+# #Establecer directorio mediante 'os'
 workspace = r'C:\Users\rafit\Desktop\Sentinel\SHP'
 os.chdir(workspace)
 
@@ -17,28 +18,35 @@ driver = ogr.GetDriverByName('ESRI Shapefile')
 datasource = driver.Open(r'C:\Users\rafit\Desktop\Sentinel\SHP', 0)
 
 
-#Iteracion sobre los 'shp', obtencion de geometria de sus features (parcelas)
-#Aun hay que almacenarlos en un diccionario o asi.
-#Esta comentado porque la geometria se coge en metros, no lat/long. Hay que solucionar
-# for shp in range(datasource.GetLayerCount()):
-#     layer = datasource.GetLayer(shp)
-#     for feature in layer:
-#         # por defecto, exporta a Wkt, de modo que no hace falta poner geom.ExportToWkt
-#         geom = feature.GetGeometryRef()
+# Iteracion sobre los 'shp', obtencion de geometria de sus features (parcelas)
+# Aun hay que almacenarlos en un diccionario o asi.
+# Se produce una transformacion a 4326 (WGS84) independientemente cual sea su SRC origen
+for shp in range(datasource.GetLayerCount()):
+	layer = datasource.GetLayer(shp)
+	sourceSR = layer.GetSpatialRef()
+	targetSR = osr.SpatialReference()
+	targetSR.ImportFromEPSG(4326)
+	coordTrans = osr.CoordinateTransformation(sourceSR,targetSR)
+	print sourceSR
+	for feature in layer:
+        # por defecto, exporta a Wkt, de modo que no hace falta poner geom.ExportToWkt
+		geom = feature.GetGeometryRef()
+		print ("La geometria original, previo reproyeccion es, expresada en  metros")
+		print geom
+		geom.Transform(coordTrans)
+		print ("La geometria reproyectada a WGS84 es, expresada en grados decimales")
+		print geom
 
-# geom = datasource.GetLayer(0)[0].GetGeometryRef()
-
-
-
+		
 # AQUI ESTA EL PROBLEMA DE QUE LAS GEOMETRIAS ESTAN EN METROS Y HACEN FALTA EN LAT/LONG
 #Estan establecidas a mano para poder continuar el proceso de descarga
 #Parcela_1 Contiene una parcela de 9 vertices al sur de Aranjuez
 #Parcela_1_rect Contiene misma zona pero en parcela rectangular
 #ParcelaSENT_rect Contiene lo mismo que la anterior pero las coordenadas son lat/long
 
-Parcela_1 = 'POLYGON ((-420245.946554843 4793717.38835783,-419261.69458634 4793299.953473,-419064.844192639 4792616.8785073,-419337.894738745 4791813.63342289,-419903.045869041 4791668.16389583,-421541.349145651 4791902.18009981,-422284.300631557 4792971.06548,-422049.350161653 4793957.72971833,-420347.546758044 4794311.91707057,-420245.946554843 4793717.38835783))'
-Parcela_1_rect = 'POLYGON ((-422397.490107098 4794482.71540755,-418838.860969346 4794513.59952112,-418758.3527074 4791505.46930436,-422315.910883079 4791474.63690589,-422397.490107098 4794482.71540755))'
-ParcelaSENT_rect = 'POLYGON ((-4.805397020191035 38.24605276891404,-2.239841508018477 38.24605276891404,-2.239841508018477 39.81259892014185,-4.805397020191035 39.81259892014185,-4.805397020191035 38.24605276891404))'
+# Parcela_1 = 'POLYGON ((-420245.946554843 4793717.38835783,-419261.69458634 4793299.953473,-419064.844192639 4792616.8785073,-419337.894738745 4791813.63342289,-419903.045869041 4791668.16389583,-421541.349145651 4791902.18009981,-422284.300631557 4792971.06548,-422049.350161653 4793957.72971833,-420347.546758044 4794311.91707057,-420245.946554843 4793717.38835783))'
+# Parcela_1_rect = 'POLYGON ((-422397.490107098 4794482.71540755,-418838.860969346 4794513.59952112,-418758.3527074 4791505.46930436,-422315.910883079 4791474.63690589,-422397.490107098 4794482.71540755))'
+# ParcelaSENT_rect = 'POLYGON ((-4.805397020191035 38.24605276891404,-2.239841508018477 38.24605276891404,-2.239841508018477 39.81259892014185,-4.805397020191035 39.81259892014185,-4.805397020191035 38.24605276891404))'
 
 #Llamada a la API, logging
 api = sentinelsat.SentinelAPI('gonzalogis', 'iwc.w6mEMp84Fj4', 'https://scihub.copernicus.eu/dhus')
@@ -46,7 +54,7 @@ api = sentinelsat.SentinelAPI('gonzalogis', 'iwc.w6mEMp84Fj4', 'https://scihub.c
 
 
 #Establecemos la geometria deseada
-geom = ParcelaSENT_rect
+# geom = ParcelaSENT_rect
 
 # Intentamos conexion de llamada al servidor de la API
 # Establecemos intentos (que podemos espaciar con time.sleep()) 
