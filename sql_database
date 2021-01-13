@@ -1,0 +1,64 @@
+Con # está ejecutado
+
+#create extension postgis
+#create extension postgis_raster
+
+#create table aoi_agricultor (aid serial primary key, nombre varchar (70),
+							 telefono integer, gmail varchar (50), cod_mun integer,
+							 cod_prov integer, geom geometry(point, 4326), sede_dir varchar(70))
+
+#create table aoi_shp (sid serial primary key, fecha date, fk_agri integer, cod_mun integer,
+					  cod_prov integer, geom geometry(multipolygon, 4326))
+#create index aoi_shp_convexhull_idx on aoi_shp using gist( ST_ConvexHull(geom))
+
+
+#create table municipios (cod_mun integer primary key, nombre varchar (70), geom geometry(multipolygon, 4326), cod_prov integer)
+#create index amunicipios_convexhull_idx on municipios using gist( ST_ConvexHull(geom))
+
+
+#create table provincias (cod_prov integer primary key, nombre varchar(70), geom geometry (multipolygon, 4326))
+#create index provincias_convexhull_idx on provincias using gist( ST_ConvexHull(geom))
+
+
+#create table sat_imagery (image_id serial primary key, cod_image varchar(70), rast raster)
+
+#create table aoi_raster_b01 (rid_b01 serial primary key, fk_aoi integer, fk_info integer,
+							 image_id integer, rast raster)
+#create index aoi_raster_b01_convexhull_idx on aoi_raster_b01 using gist( ST_ConvexHull(rast)) 
+
+
+#create table aoi_raster_b02 (rid_b02 serial primary key, fk_aoi integer, fk_info integer,
+							 image_id integer, rast raster)
+
+#create table aoi_raster_b03 (rid_b03 serial primary key, fk_aoi integer, fk_info integer,
+							 image_id integer, rast raster)
+
+create table aoi_raster_b04
+
+create table aoi_raster_b05
+
+create table aoi_raster_b06
+
+create table aoi_raster_b07
+
+create table aoi_raster_b08
+
+create table aoi_raster_b8a
+
+create table aoi_raster_b9
+
+create table aoi_raster_b10
+
+create table aoi_raster_b11
+
+create table aoi_raster_b12
+
+create table aoi_raster_info
+
+create table aoi_visible
+
+create table aoi_ndvi
+
+create table aoi_ndwi
+
+create table aoi_fcolor
