@@ -18,7 +18,7 @@ def getAOI(mode = 0, fk_agri = None):
     
     try:
         conexion = psycopg2.connect(host='localhost', database='sentinel2_ap',
-                                user='postgres', password='OrionyChimba0811')
+                                user='postgres', password='*************')
         
         #Es necesario crear un cursor sobre el objeto que contiene la conexion
         cursor = conexion.cursor()
