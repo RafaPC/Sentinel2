@@ -54,13 +54,13 @@ def getAOI(mode = 0, fk_agri = None):
     
     return dic_AOI
 
-dic_AOI = getAOI()
+# dic_AOI = getAOI()
 
-print(dic_AOI)
+# print(dic_AOI)
 
-"funcion >> crear shp temporal a cada vuelta de un bucle para hacer clip a las imagenes y luego borrarlo"
+# "funcion >> crear shp temporal a cada vuelta de un bucle para hacer clip a las imagenes y luego borrarlo"
 
-shp_temp = '/Users/davidgabellamerino/Documents/MASTER_TIG/PRUEBA_SENTINEL/shp_temporal.shp'
+# shp_temp = '/Users/davidgabellamerino/Documents/MASTER_TIG/PRUEBA_SENTINEL/shp_temporal.shp'
 
 
 if __name__ == "__main__":

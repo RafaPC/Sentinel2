@@ -9,7 +9,7 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
                     format_in = '.jp2', format_out = '.tif',
                     outputSRS = 'EPSG:4326'):
     
-    
+    zip_name = zip_name.replace('SAFE', 'zip')
     """Descomprime un archivo zip (path_zip = path_in + zip_name),
     busca la carpeta folder y tranforma los formatos de los archivos que contiene (.jp2) 
     a unos de salida (.tif) usando gdal.Translate().
@@ -51,7 +51,7 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
             if '.DS_Store' in dir:
                 dir.remove('.DS_Store')
                 
-            'para que no de error en macOS, son archivos creados automaticamente'
+            # para que no de error en macOS, son archivos creados automaticamente
                 
             bands_folder_path = os.path.join(base, 'bands.tif_folder')
             os.mkdir(bands_folder_path)
@@ -104,9 +104,9 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
 
 #****************PRUEBA****************
 
-bands_names_list, bands_folder_path, bands_path_list = unzip_transform(
-    '/Users/davidgabellamerino/Desktop/SENTINEL_PRUEBAS',
-     'S2A_MSIL2A_20210101T111451_N0214_R137_T30TUL_20210101T140201.zip')
+# bands_names_list, bands_folder_path, bands_path_list = unzip_transform(
+#     '/Users/davidgabellamerino/Desktop/SENTINEL_PRUEBAS',
+#      'S2A_MSIL2A_20210101T111451_N0214_R137_T30TUL_20210101T140201.zip')
 
 
 if __name__ == "__main__":

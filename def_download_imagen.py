@@ -24,7 +24,7 @@ def download_sentinel2_images(dic_AOI):
 	if os.path.exists(os.path.join(workspace, 'descargas')) is False:
 		os.mkdir(os.path.join(workspace, 'descargas'))
 
-	# Iteramos sobre cada clave (parcela) de diccionario, asignando su geometría a la variable
+	# Iteramos sobre cada clave (parcela) de diccionario, asignando su geometria a la variable
 	for sid in dic_AOI:
 		geom = dic_AOI[sid]
 		print (geom)
