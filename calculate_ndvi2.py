@@ -89,9 +89,9 @@ def calculate_NDVI(workspace,red_band_name, nir_band_name,
         print(e)
 
 
-calculate_NDVI('/Users/davidgabellamerino/Desktop/SENTINEL_PRUEBAS/S2A_MSIL2A_20210101T111451_N0214_R137_T30TUL_20210101T140201.SAFE/GRANULE/L2A_T30TUL_A028877_20210101T111450/IMG_DATA/R10m/bands_folder_tif/',
-               'T30TUL_20210101T111451_B04_10m.tif',
-               'T30TUL_20210101T111451_B08_10m.tif')
+# calculate_NDVI('/Users/davidgabellamerino/Desktop/SENTINEL_PRUEBAS/S2A_MSIL2A_20210101T111451_N0214_R137_T30TUL_20210101T140201.SAFE/GRANULE/L2A_T30TUL_A028877_20210101T111450/IMG_DATA/R10m/bands_folder_tif/',
+#                'T30TUL_20210101T111451_B04_10m.tif',
+#                'T30TUL_20210101T111451_B08_10m.tif')
 
 if __name__ == "__main__":
     calculate_NDVI(sys.argv[1], sys.argv[2], sys.argv[3],

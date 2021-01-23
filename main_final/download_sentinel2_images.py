@@ -1,7 +1,3 @@
-# Sentinel Web Login:
-# user: gonzalogis
-# pass: iwc.w6mEMp84Fj4
-
 # -*- coding: utf-8 -*-
 
 import os
