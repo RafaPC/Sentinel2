@@ -10,7 +10,7 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
                     format_outclip = '.tif',
                     outTransformSRS = 'EPSG:4326'):
     
-    
+    # zip_name = zip_name.replace('SAFE', 'zip')
     """Descomprime un archivo zip (path_zip = path_in + zip_name),
     busca la carpeta folder y tranforma los formatos de los archivos que contiene (.jp2) 
     a unos de salida (.tif) usando gdal.Translate().
@@ -26,20 +26,25 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
             
             Usar format_in y format_out en caso de querer tranformar
             diferentes formatos a los dados por defecto"""
-
+    
+	#FIXME: no hace nada
     os.path.exists(path_in)
-    
+
     path_zip = os.path.join(path_in, zip_name)
-    
-    file_zip = zipfile.ZipFile(path_zip, 'r')
+    print('PATH ZIP \n {} \n'.format(path_zip)) 
+    file_zip = zipfile.ZipFile(zip_name.replace('SAFE', 'zip'), 'r')
     file_zip.extractall(path = path_in)
     file_zip.close()
 
-    for base, dirs, files in os.walk(path_in):
+    # Declaración de variables que se returnean
+    bands_names_list = []
+    bands_path_list = []
+    bands_folder_path = ""
+
+    for base, dirs, files in os.walk(path_zip):
         
         if base.endswith(folder):
-   
-            
+
             print('Directorio raiz \n {} \n'.format(base)) 
             dir = os.listdir(base)
 
@@ -52,12 +57,17 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
             if '.DS_Store' in dir:
                 dir.remove('.DS_Store')
                 
-            'para que no de error en macOS, son archivos creados automaticamente'
-                
-            bands_folder_path = os.path.join(base, 'bands.tif_folder')
-            os.mkdir(bands_folder_path)
+            #para que no de error en macOS, son archivos creados automaticamente
+
+            try:    
+            	bands_folder_path = os.path.join(base, 'bands.tif_folder')
+            	os.mkdir(bands_folder_path)
+            except:
+				continue
             
             n_band = 1
+			# FIXME: mirar lo del for y esto no debería de darsele otra vez un valor
+			# porque solo entra una vez como tal
             bands_names_list = []
             bands_path_list = []
             
@@ -73,14 +83,14 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
                     if band.endswith(selected):
                 
                         image_in_path = os.path.join(base, band)
-                        'image_.jp2' 
+                        #image_.jp2
                         
                         image_out_name = band.replace(format_in, format_out)
                         bands_names_list.append(image_out_name)
                         
                         image_out_path = os.path.join(bands_folder_path,
                                                       image_out_name)
-                        'image_.tif'
+                        #image_.tif
                         bands_path_list.append(image_out_path)
                         
                         if format_out == '.tif':
@@ -88,16 +98,14 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
                         
                         print('\n...transformando formato de {0} > {1}...\n'\
                               .format(format_in, format_out))
-                        
+
+					   # PASA DE .JP2 A .TIF 
                         gdal.UseExceptions() # Enable exceptions
                         gdal.Open(image_in_path)
                         gdal.Translate(image_out_path, image_in_path,
-                                       format = format_gdal_out,
-                                       outputSRS = outTransformSRS,
-                                       outputBounds = [-180, 90, 180, -90])
-                                       
-                        
+                                       format = format_gdal_out)
 
+                        # #CREA NOMBRE DE LOS CLIPS
                         image_outclip_name = image_out_name[:-4] +'_clip' \
                                              + image_out_name[-4:]
 
@@ -108,33 +116,18 @@ def unzip_transform(path_in, zip_name, folder = 'R10m',
                         
                         if format_out == '.tif':
                             format_gdal_out = 'GTiff'
-            
+
+						#CLIPEA LOS .TIF
                         gdal.Translate(imageclip_outpath, image_out_path,
-                        format = format_gdal_out,
-                        projWin =[ -3.79, 42.7839343098834, -5.74, 40.97],
-                        projWinSRS = outTransformSRS)
-        
+                        				format = format_gdal_out,
+                        				projWin =[ -3.798980, 43.042195, -3.404507, 42.898601],
+                        				projWinSRS = outTransformSRS)
                         print('{} transformación realizada \n'.format(n_band))
-                        n_band +=1
+                        n_band += 1
 
             print("Todas las transformaciones han sido completadas")
             print('\n Lista de elementos: \n')
             print(bands_names_list)
 
-    return bands_names_list, bands_folder_path, bands_path_list, imagesclip_pathlist
-
-
-#****************PRUEBA****************
-
-bands_names_list, bands_folder_path, bands_path_list, imagesclip_pathlist = unzip_transform(
-    '/Users/davidgabellamerino/Desktop/SENTINEL_PRUEBAS',
-     'S2A_MSIL2A_20210101T111451_N0214_R137_T30TUL_20210101T140201.zip')
-
-
-#POR REVISAR *********************************************
-
-#if __name__ == "__main__":
-    
-#    bands_names_list, bands_folder_path, bands_path_list = unzip_transform(
-#                                                    sys.argv[1], sys.argv[2])
-
+    # return bands_names_list, bands_folder_path, bands_path_list, imagesclip_pathlist
+    return bands_names_list, bands_folder_path, bands_path_list
