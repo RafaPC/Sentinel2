@@ -62,8 +62,8 @@ def download_sentinel2_images(dic_AOI):
 			# Seleccionamos el primer producto por su ID
 			# Si su ID ya ha sido descargada, continuamos con la iteracion general
 			if responseOK is True:	
-				print "Total de imagenes validas para la parcela ", sid,\
-					"encontrados: ", len(products_list)
+				print ("Total de imagenes validas para la parcela ", sid,\
+					"encontrados: ", len(products_list))
 				id = list(products_list.keys())[0]
 				filename = products_list[id]["filename"]
 				if id in idList:
