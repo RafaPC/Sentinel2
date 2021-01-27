@@ -27,7 +27,8 @@ def calculate_NDVI(workspace, red_band_name, nir_band_name,
 	try:
 		os.path.exists(workspace)
 		os.chdir(workspace)
-
+		
+		ndvi_path = os.path.join(workspace, output_filename)
 		red_band_path = os.path.join(workspace, red_band_name[:-4] + '_clip.tif')
 		nir_band_path = os.path.join(workspace, nir_band_name[:-4] + '_clip.tif')
 		
@@ -75,6 +76,8 @@ def calculate_NDVI(workspace, red_band_name, nir_band_name,
 		#writes data on the out-band
 		ndvi_band.WriteArray(ndvi)
 		print('_' * 15) 
+		
+		return ndvi_path
 	
 	except IOError as ioe:
 		print("Directory doesn't exist") 
