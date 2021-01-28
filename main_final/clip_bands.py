@@ -3,7 +3,7 @@
 # Filename: clip_bands.py
 # Authors: David Gabella Merino & Gonzalo Prieto Ciprian
 # Date: January 27, 2021
-# Description: clip raster with area of interest (shp) using gdal.Translate
+# Description: Band clipping with AOI envelope by using gdal.Translate
 
 
 from osgeo import gdal
@@ -26,19 +26,19 @@ def image_clipped_AOI(band_list, bands_folder_path, sid, AOI_clip):
     
         for band_name in band_list:
             
-            # Creates clip name
+            # Clip name creation
             image_outclip_name = band_name[:-4] + '_clip' + band_name[-4:]
             
-            # Creates clip path
+            # Clip path creation
             imageclip_outpath = os.path.join(bands_folder_path,
                                             'clipped_images_' + str(sid),
                                              image_outclip_name)
             
-            #Clips from raster images with envelope shp using Translate
+            # Projection and clipping raster image with Shp envelope using Translate
             gdal.Translate(imageclip_outpath, # output folder path
                 os.path.join(bands_folder_path, band_name), # output file path
                 format = 'GTiff',
-                #projWin are the limits to cut the raster
+                # projWin sets boundary raster image will be clipped to
                 projWin = [AOI_clip[0], AOI_clip[3], AOI_clip[1], AOI_clip[2]],
                 projWinSRS = 'EPSG:4326')
             

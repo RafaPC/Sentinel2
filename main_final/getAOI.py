@@ -3,8 +3,8 @@
 # Filename: getAOI.py
 # Authors: David Gabella Merino & Gonzalo Prieto Ciprian
 # Date: January 27, 2021
-# Description: connects to a PostGis DB, takes the geometries,
-# transform them in wkt and stores them in a dictionary (sid:geom)
+# Description: PostGIS Database connection, geometry values taking and WKT transforming.
+# 			   Dictionary {'SID':'WKT Geometry'} returning
 
 try:
     import sys
@@ -29,13 +29,12 @@ def getAOI(mode = 0, fk_agri = None):
 
     dic_AOI = {} #sid:geom
     
-    # Connects to a PostGis DB
+    # PostGIS Database connection
     try:
         connection = psycopg2.connect(host='localhost', database='sentinel2_ap',
                                 user='postgres', password='OrionyChimba0811')
         
-        # It is necessary to create a cursor on the object
-        # that contains the connection 
+        # Cursor creation containing connection 
         cursor = connection.cursor()
 
     except Exception as e:
@@ -44,7 +43,7 @@ def getAOI(mode = 0, fk_agri = None):
     
     query = "SELECT sid, st_astext(geom) FROM aoi_ejemplos"
     
-    #creates and execute query
+    # Query construction and execution
     try:
         if mode == 0: 
             cursor.execute(query)
@@ -60,12 +59,12 @@ def getAOI(mode = 0, fk_agri = None):
         print (e)
         print ('Could not execute the query')
         
-    # Run through the query result and store geometry to dictionary 
+    # Run through query result and store geometry to dictionary 
     for sid, geom in cursor.fetchall():
         
         dic_AOI[sid] = geom
 
-    # Close connection
+    # Connection closing
     connection.commit()
     connection.close()
     

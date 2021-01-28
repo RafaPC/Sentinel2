@@ -1,34 +1,40 @@
+# -*- coding: utf-8 -*- 
+
+# Filename: get_shp_envelope.py
+# Authors: David Gabella Merino & Gonzalo Prieto Ciprian
+# Date: January 27, 2021
+# Description: AOI-based envelope shapefile creation
+
+
 from osgeo import ogr, osr
 import os
 
 def	get_shp_envelope(bands_folder_path, sid, geom):
 
+	# Directory creation
 	clipped_images_dir = 'clipped_images_' + str(sid)
 	output_path = os.path.join(bands_folder_path, clipped_images_dir)
 	os.mkdir(output_path)
 	
 	output_path_shp = os.path.join(output_path, 'shp_clip.shp')
 	
-	#Creates spatial ref object and sets it as WGS84
+	# Spatial reference creation and WGS84 setting
 	spatialRef = osr.SpatialReference() 
 	spatialRef.SetWellKnownGeogCS('WGS84')
 	
-	#Creates a new shp with a layer #Sets spatial_ref to new_layer
+	# New empty Shp with layer creation. Spatial reference setting
 	driver = ogr.GetDriverByName('ESRI Shapefile')
 	datasource = driver.CreateDataSource(output_path)
 	layer = datasource.CreateLayer('shp_clip', srs = spatialRef,
 								geom_type = ogr.wkbMultiPolygon)
 	
-	# Fields defining for structure a layer #just needs field 'sid'
+	# Field definition and creation
 	fieldDef_sid = ogr.FieldDefn('sid', ogr.OFTInteger)
-	layer.CreateField(fieldDef_sid) #Creates fields defined in layer
+	layer.CreateField(fieldDef_sid) # Defined in layer
 	
-	# Define a new object (template) with the fields structure of layer
-	# This is necesary for define a feature_object (empty),
-	# for later introduce field values
+	# Feature definition
 	feature_Defn = layer.GetLayerDefn()
-		
-	# Define an empty object with the structure of template new_FeatureDefn
+
 	feature = ogr.Feature(feature_Defn)
 	
 	
@@ -36,7 +42,7 @@ def	get_shp_envelope(bands_folder_path, sid, geom):
 	feature.SetField('sid', sid)
 	feature.SetGeometry((ogr.CreateGeometryFromWkt(geom)))
 	
-	# Creates a feature in new_layer
+	# Feature creation in new layer
 	layer.CreateFeature(feature)
 
 	src_geom = feature.GetGeometryRef()

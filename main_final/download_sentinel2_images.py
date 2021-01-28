@@ -3,7 +3,7 @@
 # Filename: download_sentinel2_images.py
 # Authors: David Gabella Merino & Gonzalo Prieto Ciprian
 # Date: January 27, 2021
-# Description: downloads Sentinel2 images using sentinelsat API from SCIHUB
+# Description: Sentinel-2 imagery download through sentinelsat API from SCIHUB
 
 try:
 	import os
@@ -21,35 +21,35 @@ except ImportError:
 def download_sentinel2_images(workspace, dic_AOI):
 	
 	"""   
-	 EXPLICACION 
-	 
-	 VARIABLES
+	 dic_AOI = AOI's 'SID' will be keys
+	 		    Database AOI's geometry will be values
 	
 	"""
 	
 	os.chdir(workspace)
 
-	# Llamada a la API, logging
+	# API calling, logging
 	api = sentinelsat.SentinelAPI('gonzalogis', 'iwc.w6mEMp84Fj4', 'https://scihub.copernicus.eu/dhus')
 	idList = []
 	dic_SidZip={}
-	# Comprobamos si existe una carpeta de descargas, para crearla en caso negativo
+	# 'Downloads'folder existance checking, creation if false
 	if os.path.exists(os.path.join(workspace, 'Downloads')) is False:
 		os.mkdir(os.path.join(workspace, 'Downloads'))
-
-	# Iteramos sobre cada clave (parcela) de diccionario, asignando su geometria a la variable
+		
+	# Main iteration in which the rest will be based
+	# Geometry assignment through dictionary key's iteration
 	for sid in dic_AOI:
 		geom = dic_AOI[sid]
 		print (geom)
 
 
-	# Intentamos conexion de llamada al servidor de la API
-	# Establecemos intentos (que podemos espaciar con time.sleep()) 
-	# Porque en ocasiones si el servidor esta muy solicitado, da problema de conexion
+	# API server connection trial
+	# Attempts spaced by time.sleep() due to server error
 		tries = 0
 		responseOK = False
 		while responseOK is False and tries < 3:
-	# Lista de predicados espaciales utilizables:
+
+	# List of spatial relationships to use:
 
 	# # area_relation ({'Intersects', 'Contains', 'IsWithin'}, optional) --
 	# # What relation to use for testing the AOI. Case insensitive.
@@ -57,42 +57,51 @@ def download_sentinel2_images(workspace, dic_AOI):
 	# # Contains: true if the AOI is inside the footprint
 	# # IsWithin: true if the footprint is inside the AOI
 
-	# Busqueda por geometria, fecha y  SciHub query keywords
-	# La busqueda (que devuelve una lista) es generalista (20 dias y 0-90 % nubes) porque solo seleccionamos
-	# el producto deseado mas adelante, independientemente de que obtengamos una lista de 20-40
-	# hacemos order_by por atributo (indicando +(default) o - delante para ordenar ascending o descending)
+	# Search based on geometry, date and SciHub query keywords
+	# Order_by attribute, indicating '+' (by default) or '-' for ascending/descending ordering
 			try: 
+				# OpenSearch API query-based URI creation
 				products_list = api.query(geom,
 										date=('NOW-20DAY', 'NOW'),
 										platformname='Sentinel-2',
 										cloudcoverpercentage=(0, 90),
-										order_by= ('size, cloudcoverpercentage')) #Aqui descargo la imagen de menor tamano
-				responseOK = True
+										# Smallest size product ordering for processing efficiency management
+										order_by= ('size, cloudcoverpercentage'))
+				responseOK = True		
+										# Search returns list (of dictionaries) of available matching products
 
-			# Capturamos el error de conexion al servidor
+			# SentinelSat API Server connection error catching
 			except sentinelsat.SentinelAPIError as exception:
 				tries += 1
 				mesgError = exception.response.json()['feed']['error']['message']
 				print (exception.msg , mesgError)
+
 			if tries < 3 and responseOK is False:
 					time.sleep(3.0)
-			# Seleccionamos el primer producto por su ID
-			# Si su ID ya ha sido descargada, continuamos con la iteracion general
+
+			# First product 'ID' selection from returned list
 			if responseOK is True:    
 				print ("Total de imagenes validas para la parcela ", sid,\
 					"encontrados: ", len(products_list))
+				# First list product (dictionary of a product) selection (most recent date)
 				id = list(products_list.keys())[0]
+				# "filename" will be value taken from product key 'filename'
 				filename = products_list[id]["filename"]
+
+				# If 'ID' has already been downloaded redundant process is avoided
+				# New 'ID' + Already Dowloaded Image adding as new pair in dic_SidZip
 				if id in idList:
 					print ("para la parcela {} la id {} esta repetida".format(sid, id))
 					dic_SidZip[sid] = filename
 					continue
-				# Si el ID de descarga no existia, append a la lista y descargamos
+
+				# Non preexisting 'ID', and 'SID' will be saved as new pair in dic_SidZip
 				else:
 					idList.append(id)
 					dic_SidZip[sid] = filename
 				print ('ID: ', id)
 				
+				# OData API product downloading
 				respuesta = api.download(id, os.path.join(workspace, 'Downloads'))
 				print (respuesta)
 				
@@ -101,5 +110,5 @@ def download_sentinel2_images(workspace, dic_AOI):
 				print ("La parcela {} no se ha podido descargar".format(sid))
 				continue
 
-
+	# Dictionary returned will be 'SID' (keys) and 'filename' (values) obtained from OpenSearch API dictionary
 	return    dic_SidZip

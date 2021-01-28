@@ -1,22 +1,26 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
+
+# Filename: send_postgis.py
+# Authors: David Gabella Merino & Gonzalo Prieto Ciprian
+# Date: January 27, 2021
+# Description: Result bands and NDVI storing in PostGIS Database
 
 import subprocess
 
 def send_postgis(sid, ndvi_path, tci_path):
     
     
-    """Utilizando raster2pgsql, carga un raster dataset en una DB postgis
-    cada raster de la bands_path_list se guarda en una tabla,
-    tipo AOI_raster_Bn, dependiendo del nombre de la banda.
-    
-    
-    bands_path_list = lista con las rutas del dateset devuelta por la
-    función 
+    """
+	Using raster2pgsql, saves into a PostGIS DB
+	every raster dataset from 'bands_path_list' as table
+
+    bands_path_list = returned list of raster dataset paths
     
     """
     
+	# Change to where 'path' lives if applies
     path_raster2pgsql = '/Library/PostgreSQL/13/bin/raster2pgsql' 
-    #Cambiar por el propio path donde se encuentre
+    
     
     table_name = 'AOI_raster_{}'.format(sid)
             

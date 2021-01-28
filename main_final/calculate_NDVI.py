@@ -3,7 +3,7 @@
 # Filename: calculate_NDVI.py
 # Authors: David Gabella Merino & Gonzalo Prieto Ciprian
 # Date: January 27, 2021
-# Description: calculate NDVI index from Sentinel 2 bands 4(red) 8(nir)
+# Description: NDVI index calculation based on Sentinel-2 bands 4(Red)/8(NIR)
 
 
 try:
@@ -27,10 +27,10 @@ def calculate_NDVI(workspace, red_band_name, nir_band_name,
         os.path.exists(workspace)
         os.chdir(workspace)
         
-        #path where will be stored the ndvi image
+        # Path where NDVI image will be saved
         ndvi_path = os.path.join(workspace, output_filename)
 
-        #build nir and red paths from workspace + bands_name_list + clip-end
+        # NIR/Red paths building from workspace + bands_name_list + clip-end
         red_band_path = os.path.join(workspace,
                                     red_band_name[:-4] + '_clip.tif')
         nir_band_path = os.path.join(workspace,
@@ -40,22 +40,22 @@ def calculate_NDVI(workspace, red_band_name, nir_band_name,
             print('Output_filename must end with .tif')
             sys.exit(1)
 
-        #open red and nir bands
+        # open Red and NIR bands
         red_band = gdal.Open(red_band_path, GA_ReadOnly)
         nir_band = gdal.Open(nir_band_path, GA_ReadOnly)
-        #nir and red bands have the same characteristics
+        # NIR and Red bands have same characteristics
         
-        #gets transform and projection to setting ndvi image
+        # Get transform and projection
         transform = red_band.GetGeoTransform()
         proj = red_band.GetProjection()
 
-        #gets image size
+        # Get image size
         rows = red_band.RasterYSize
         columns = red_band.RasterXSize
         
         print ('Rows: {} Columns: {}'.format(rows, columns))
         
-        #creates an output image with red band charts and 1 band, 
+        # 1 band-output image creation
         driver = gdal.GetDriverByName('GTiff')
         NDVI = driver.Create(output_filename, columns, rows, 1, GDT_CFloat64)
         ndvi_band = NDVI.GetRasterBand(1)
@@ -63,21 +63,21 @@ def calculate_NDVI(workspace, red_band_name, nir_band_name,
         NDVI.SetProjection(proj)
         ndvi_band.SetNoDataValue(-99)
 
-        #read data
+        # Data reading as array
         red_data = red_band.ReadAsArray(0, 0, columns,
                                         rows).astype(np.float64)
 
         nir_data = nir_band.ReadAsArray(0, 0, columns,
                                         rows).astype(np.float64)
         
-        #calculates NDVI
-        #NDVI = (NIR — RED)/(NIR + RED) #SENTINEL2: RED - B4 ; NIR - B8
-        #if you want use LANDSAT8: RED - B4 ; NIR - B5
+        # NDVI Calculation
+        # NDVI = (NIR — RED)/(NIR + RED) #SENTINEL2: RED = B4 ; NIR = B8
+        # for LANDSAT8 please remind: RED = B4 ; NIR = B5
         mask = np.greater(red_data + nir_data, 0)
         ndvi = np.choose(mask, (-99, (nir_data-red_data)
                                 / (nir_data+red_data)))
         
-        #writes data on the out-band
+        # Output image's band writting 
         ndvi_band.WriteArray(ndvi)
         print('_' * 15) 
         

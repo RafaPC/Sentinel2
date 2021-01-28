@@ -3,7 +3,7 @@
 # Filename: unzip_transform.py
 # Authors: David Gabella Merino & Gonzalo Prieto Ciprian
 # Date: January 27, 2021
-# Description: unzip file and tranform its format (default .jp2 >> .tif)
+# Description: Sentinel-2 downloaded product unzip and format transformation (default .jp2 >> .tif)
 
 try:
 	import zipfile 
@@ -19,34 +19,35 @@ def unzip_transform(workspace, zip_name, folder = 'R10m',
 					format_in = '.jp2', format_out = '.tif',
 					format_outclip = '.tif'):
 	
-	"""Unzip a zip file (path_zip = path_in + zip_name), look for the folder
-	and transform the formats of the files it contains (.jp2)
-	to output ones (.tif) using gdal.Translate ().
+	"""
+	File unzip (path_zip = path_in + zip_name), folder search
+	and format transformation of those containing '.jp2' to 'tif'
+	format using gdal.Translate()
 	
-	The files created are saved in bands.tif_folder,
-	in the same directory as the .jp2 files
+	Created files are saved into 'bands.tif_folder',
+	in the same directory as  '.jp2' files
 	
 	workspace = path where the downloaded .zip files folder is located
 	zip_name = name of the .zip
 	folder = folder where the .jp2 files to be transformed are located
-	*default 'R10m' for Sentinel2 image downloads from Open Acess Hub
+	*default 'R10m' for Sentinel-2 image downloads
 	
-	Use format_in and format_out in case you want to transform 
-	different formats to the default ones """
-	
+	Please, do use 'format_in' and 'format_out' in case different formats
+	from default ones are desired
+	"""
+	# Path creation and '.zip' extraction
 	path_zip = os.path.join(workspace, 'Downloads', zip_name)
 	print('PATH ZIP \n {} \n'.format(path_zip)) 
 	file_zip = zipfile.ZipFile(path_zip.replace('SAFE', 'zip'), 'r')
 	file_zip.extractall(path = os.path.join(workspace, 'Downloads'))
 	file_zip.close()
 
-	# Declaration of variables that is returned 
+	# Variables declaration
 	bands_names_list = []
 	bands_path_list = []
 	bands_folder_path = ""
 
-	# Searches in path_zip directories the folder
-	# that matches the search folder name
+	# Matching directories search
 	for base, dirs, files in os.walk(path_zip):
 		
 		if base.endswith(folder):
@@ -55,12 +56,12 @@ def unzip_transform(workspace, zip_name, folder = 'R10m',
 			dir = os.listdir(base)
 			print('This directory has {} files \n'.format(len(dir)))
 			
-			# So that no error in macOS, they are files created automatically
+			# macOS automatically created files removal
 			if '.DS_Store' in dir:
 				dir.remove('.DS_Store')
 
 			try:
-				# Creates folder it not exists yet
+				# Folder creation
 				bands_folder_path = os.path.join(base, 'bands.tif_folder')
 				os.mkdir(bands_folder_path)
 			except:
@@ -72,10 +73,10 @@ def unzip_transform(workspace, zip_name, folder = 'R10m',
 			bands_to_transform = ['B02_10m.jp2', 'B03_10m.jp2',
 								 'B04_10m.jp2', 'B08_10m.jp2', 'TCI_10m.jp2']
 
-			# Enables GDAL exceptions
+			# GDAL exceptions enabling
 			gdal.UseExceptions()
 			
-			# Walks on path list of dir
+			# Bands finding and transformation
 			for band in dir:
 				
 				for selected in bands_to_transform:
@@ -104,7 +105,7 @@ def unzip_transform(workspace, zip_name, folder = 'R10m',
 						print(msg.format(format_in, format_out))
 						
 						try:
-							#Open file and transform the format using Translate
+							# File transformation using gdal.Translate()
 							if os.path.exists(image_out_path) is False:
 								gdal.Open(image_in_path)
 								gdal.Translate(image_out_path,
