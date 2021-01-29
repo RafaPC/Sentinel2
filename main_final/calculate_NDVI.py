@@ -22,7 +22,19 @@ except ImportError:
 
 def calculate_NDVI(workspace, red_band_name, nir_band_name,
                    output_filename='NDVI.tif'):
+	"""
+	Normalized Difference Vegetation Index (NDVI) calculation
+	based on NIR and Red bands:
+			NDVI = (NIR — RED)/(NIR + RED)
 
+
+	red_band_name = List position referencing Red band
+	nir_band_name = List position referencing NIR band
+
+
+	* output_filename = constant output filename identical due to lack of overwriting chances
+	
+	"""
     try:
         os.path.exists(workspace)
         os.chdir(workspace)

@@ -27,13 +27,13 @@ def unzip_transform(workspace, zip_name, folder = 'R10m',
 	Created files are saved into 'bands.tif_folder',
 	in the same directory as  '.jp2' files
 	
-	workspace = path where the downloaded .zip files folder is located
 	zip_name = name of the .zip
 	folder = folder where the .jp2 files to be transformed are located
 	*default 'R10m' for Sentinel-2 image downloads
 	
 	Please, do use 'format_in' and 'format_out' in case different formats
 	from default ones are desired
+	
 	"""
 	# Path creation and '.zip' extraction
 	path_zip = os.path.join(workspace, 'Downloads', zip_name)
@@ -116,6 +116,7 @@ def unzip_transform(workspace, zip_name, folder = 'R10m',
 								n_band += 1
 						except Exception as e:
 							print('Transformated band already existed')
+				bands_names_list.sort()
 			print('All transformations have been completed')
 			print('\n List of items: \n')
 			print(bands_names_list)

@@ -5,22 +5,30 @@
 # Date: January 27, 2021
 # Description: Band clipping with AOI envelope by using gdal.Translate
 
+try:
+	from osgeo import gdal
+	import os
 
-from osgeo import gdal
-import os
+except ImportError:
+	from osgeo import gdal
+	import os
 
 def image_clipped_AOI(band_list, bands_folder_path, sid, AOI_clip):
     
     
-    """Clip a list of bands that have in a folder with an area of interest
+    """
+	Clip a list of bands that have in a folder with an area of interest
     
     band_list = list of bands to clip with AOI
     bands_folder_path = folder where are the bands
     sid = area of interes identifier 
     AOI_clip = envelope object or list that containts:
-            minLongitude, maxLongitude, minLatitude, maxLatitude
+               minLongitude, maxLongitude, minLatitude, maxLatitude
     
-    - raster and shp (AOI) have to be in the same projection  """
+    raster and Shp (AOI) must be under the same CRS not being 
+	equally necessary for both being projected.
+	
+	"""
     
     try:
     

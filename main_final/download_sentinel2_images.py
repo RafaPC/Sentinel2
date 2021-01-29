@@ -21,8 +21,11 @@ except ImportError:
 def download_sentinel2_images(workspace, dic_AOI):
 	
 	"""   
-	 dic_AOI = AOI's 'SID' will be keys
-	 		    Database AOI's geometry will be values
+	Sentinel-2 API connection, query based URI construction for selected product downloading
+	through OData and OpenSearch API's usage.
+	
+	dic_AOI = AOI's 'SID' will be keys
+	 		  Database AOI's geometry will be values
 	
 	"""
 	

@@ -5,7 +5,11 @@
 # Date: January 27, 2021
 # Description: Result bands and NDVI storing in PostGIS Database
 
-import subprocess
+try:
+	import subprocess
+
+except ImportError:
+	import subprocess
 
 def send_postgis(sid, ndvi_path, tci_path):
     
@@ -14,8 +18,11 @@ def send_postgis(sid, ndvi_path, tci_path):
 	Using raster2pgsql, saves into a PostGIS DB
 	every raster dataset from 'bands_path_list' as table
 
-    bands_path_list = returned list of raster dataset paths
-    
+	sid = Unicode acting as primary key in original DB
+	ndvi_path = List of paths leading to all different NDVI images
+	tci_path  = List of paths leading to all different TCI band images
+    bands_path_list = Returned list of raster dataset paths
+
     """
     
 	# Change to where 'path' lives if applies
