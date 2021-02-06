@@ -16,7 +16,8 @@ except ImportError:
 def	get_shp_envelope(bands_folder_path, sid, geom):
 
 	""""
-	Envelope Shapefile creation using OGR, based on polygon (AOI) geometry for subsequent clip
+	Envelope Shapefile (minLon, maxLon, minLat, maxLat) creation using OGR,
+	based on polygon (AOI) geometry for subsequent clip
 
 	bands_folder_path =  List of paths leading to folder containing R10m bands imagery
 	sid = Unicode acting as primary key in original DB
