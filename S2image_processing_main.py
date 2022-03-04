@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*- 
 
 # Filename: S2image_processing_main.py
-# Authors: David Gabella Merino & Gonzalo Prieto Ciprian
 # Date: January 27, 2021
-# Description: 
+# Description:
 # 1. Gets Areas of Interest (AOI) from PostGIS DB and store in dic{sid:geom}
 # 2. Downloads Sentinel2 images of AOI using sentinelsat API from SCIHUB
 # 3. Unzip file and tranform its format (default .jp2 >> .tif)
@@ -14,29 +13,29 @@
 
 # Way to get to the folder with the images (example):
 
-# Downloads >> S2A_MSIL2A_...01.SAFE >> S2A_MSIL2A_...01.SAFE >> GRANULE >> 
+# Downloads >> S2A_MSIL2A_...01.SAFE >> S2A_MSIL2A_...01.SAFE >> GRANULE >>
 # L2A_T30...47 >> IMG_DATA >> R10m >> bands.fit_folder >> clipped_images_1
 # A new 'clipped_images_X' will be created for each AOI using a same Sentinel-2 product
 
 try: 
-    import os
-    from getAOI import getAOI
-    from download_sentinel2_images import download_sentinel2_images
-    from unzip_transform import unzip_transform
-    from get_shp_envelope import get_shp_envelope
-    from clip_bands import image_clipped_AOI
-    from calculate_NDVI import calculate_NDVI
-    from send_postgis import send_postgis
+	import os
+	from getAOI import getAOI
+	from download_sentinel2_images import download_sentinel2_images
+	from unzip_transform import unzip_transform
+	from get_shp_envelope import get_shp_envelope
+	from clip_bands import image_clipped_AOI
+	from calculate_NDVI import calculate_NDVI
+	from send_postgis import send_postgis
 
 except ImportError:
-    import os
-    from getAOI import getAOI
-    from download_sentinel2_images import download_sentinel2_images
-    from unzip_transform import unzip_transform
-    from get_shp_envelope import get_shp_envelope
-    from clip_bands import image_clipped_AOI
-    from calculate_NDVI import calculate_NDVI
-    from send_postgis import send_postgis
+	import os
+	from getAOI import getAOI
+	from download_sentinel2_images import download_sentinel2_images
+	from unzip_transform import unzip_transform
+	from get_shp_envelope import get_shp_envelope
+	from clip_bands import image_clipped_AOI
+	from calculate_NDVI import calculate_NDVI
+	from send_postgis import send_postgis
 
 
 workspace = 'F:/Sentinel/SHP'
@@ -54,25 +53,27 @@ dic_AOI = getAOI()
 zip_path_list = download_sentinel2_images(workspace, dic_AOI)
 
 for sid in zip_path_list:
-    
-    # 3. Downloaded products unzip and bands format transformation (default .jp2 >> .tif)
-    bands_names_list, bands_folder_path, bands_path_list = unzip_transform(
-                                                           workspace,
-                                                           zip_path_list[sid])
-    # 4. Envelope Shapefile creation based on AOI
-    envelope = get_shp_envelope(bands_folder_path, sid, dic_AOI[sid])
-    # 5. Envelope based clipping of '.tif' imagery
-    image_clipped_AOI(bands_names_list, bands_folder_path, sid, envelope)
-    
-    print ("SID {} clips created in {}".format(sid, bands_folder_path))
-    
-    # Folder creation for clipped images storing
-    clipped_folder = os.path.join(bands_folder_path,
-                                  'clipped_images_'+ str(sid))
-    # 6. NDVI Calculation based on '.tif' clipped imagery
-    ndvi_path = calculate_NDVI(clipped_folder, bands_names_list[2],
-                                                bands_names_list[3])
-    # 7. Result bands sending to PostGIS DB *** NOT FUNCTIONAL YET ***
-    #send_postgis(sid, ndvi_path)			***  WORK IN PROGRESS  ***
-    
-    print('\n *** IMAGE PROCESSING FINISHED FOR SID {0} *** \n'.format(sid))
+
+	# 3. Downloaded products unzip and bands format transformation (default .jp2 >> .tif)
+	bands_names_list, bands_folder_path, bands_path_list = unzip_transform(
+															workspace,
+															zip_path_list[sid])
+
+	# 4. Envelope Shapefile creation based on AOI
+	envelope = get_shp_envelope(bands_folder_path, sid, dic_AOI[sid])
+
+	# 5. Envelope based clipping of '.tif' imagery
+	image_clipped_AOI(bands_names_list, bands_folder_path, sid, envelope)
+
+	print ("SID {} clips created in {}".format(sid, bands_folder_path))
+
+	# Folder creation for clipped images storing
+	clipped_folder = os.path.join(bands_folder_path,
+									'clipped_images_'+ str(sid))
+	# 6. NDVI Calculation based on '.tif' clipped imagery
+	ndvi_path = calculate_NDVI(clipped_folder, bands_names_list[2],
+												bands_names_list[3])
+	# 7. Result bands sending to PostGIS DB *** NOT FUNCTIONAL YET ***
+	#send_postgis(sid, ndvi_path)			***  WORK IN PROGRESS  ***
+
+	print('\n *** IMAGE PROCESSING FINISHED FOR SID {0} *** \n'.format(sid))

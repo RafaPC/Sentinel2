@@ -1,0 +1,12 @@
+database = {
+	"host": "localhost",
+	"user": "postgres",
+	"password": "password",
+	"database": "database" 
+}
+
+sentinel = {
+	"user": "user",
+	"password": "password",
+	"api_url": "https://scihub.copernicus.eu/dhus"
+}
