@@ -17,27 +17,17 @@
 # L2A_T30...47 >> IMG_DATA >> R10m >> bands.fit_folder >> clipped_images_1
 # A new 'clipped_images_X' will be created for each AOI using a same Sentinel-2 product
 
-try: 
-	import os
-	from getAOI import getAOI
-	from download_sentinel2_images import download_sentinel2_images
-	from unzip_transform import unzip_transform
-	from get_shp_envelope import get_shp_envelope
-	from clip_bands import image_clipped_AOI
-	from calculate_NDVI import calculate_NDVI
-	from send_postgis import send_postgis
-
-except ImportError:
-	import os
-	from getAOI import getAOI
-	from download_sentinel2_images import download_sentinel2_images
-	from unzip_transform import unzip_transform
-	from get_shp_envelope import get_shp_envelope
-	from clip_bands import image_clipped_AOI
-	from calculate_NDVI import calculate_NDVI
-	from send_postgis import send_postgis
+import os
+from getAOI import getAOI
+from download_sentinel2_images import download_sentinel2_images
+from unzip_transform import unzip_transform
+from get_shp_envelope import get_shp_envelope
+from clip_bands import image_clipped_AOI
+from calculate_NDVI import calculate_NDVI
+from send_postgis import send_postgis
 
 
+# Workspace should be read from input
 workspace = 'F:/Sentinel/SHP'
 
 
